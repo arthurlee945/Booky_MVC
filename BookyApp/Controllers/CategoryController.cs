@@ -1,6 +1,7 @@
 ﻿using BookyApp.Data;
 using BookyApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookyApp.Controllers
 {
@@ -32,6 +33,7 @@ namespace BookyApp.Controllers
             {
                 _db.Categories.Add(obj);
                 _db.SaveChanges();
+                TempData["success"] = "Category Created Successfully";
                 return RedirectToAction("Index");
             }
             return View();
@@ -57,9 +59,40 @@ namespace BookyApp.Controllers
 			{
 				_db.Categories.Update(obj);
 				_db.SaveChanges();
+				TempData["success"] = "Category Updated Successfully";
+
 				return RedirectToAction("Index");
 			}
 			return View();
+		}
+
+		public IActionResult Delete(int? id)
+		{
+			if (id == null || id == 0)
+			{
+				return NotFound();
+			}
+			Category? categoryFromDb = _db.Categories.Find(id);
+			if (categoryFromDb == null)
+			{
+				return NotFound();
+			}
+			return View(categoryFromDb);
+		}
+		[HttpPost, ActionName("Delete")]
+
+		public IActionResult DeletePost(int? id)
+		{
+            Category? deletingPost = _db.Categories.Find(id);
+            if(deletingPost == null)
+            {
+                return NotFound();
+            }
+            _db.Categories.Remove(deletingPost);
+			_db.SaveChanges();
+			TempData["success"] = "Category Deleted Successfully";
+
+			return RedirectToAction("Index");
 		}
 	}
 }
