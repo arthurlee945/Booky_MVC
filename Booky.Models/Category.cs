@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace BookyApp.Models
+namespace Booky.Models
 {
     public class Category
     {
@@ -13,7 +13,7 @@ namespace BookyApp.Models
         [DisplayName("Category Name")]
         public string Name { get; set; } = "";
         [DisplayName("Display Order")]
-        [Range(1,100, ErrorMessage ="Display Order Must be between 1-100")]
+        [Range(1, 100, ErrorMessage = "Display Order Must be between 1-100")]
         public int DisplayOrder { get; set; }
     }
 }

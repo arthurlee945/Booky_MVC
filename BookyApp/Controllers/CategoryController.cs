@@ -1,5 +1,5 @@
-﻿using BookyApp.Data;
-using BookyApp.Models;
+﻿using Booky.DataAccess.Data;
+using Booky.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

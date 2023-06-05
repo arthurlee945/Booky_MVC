@@ -1,4 +1,4 @@
-using BookyApp.Data;
+using Booky.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
