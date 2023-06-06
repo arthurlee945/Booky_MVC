@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Booky.Models\Booky.Models.csproj" />
-    <ProjectReference Include="..\Booky.Utility\Booky.Utility.csproj" />
+    <ProjectReference Include="..\Booky.Models\BookyBook.Models.csproj" />
+    <ProjectReference Include="..\Booky.Utility\BookyBook.Utility.csproj" />
   </ItemGroup>
 
 </Project>

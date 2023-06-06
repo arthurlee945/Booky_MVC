@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Booky.DataAccess.Data;
-using Booky.DataAccess.Repository.IRepository;
+using BookyBook.DataAccess.Data;
+using BookyBook.DataAccess.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
-namespace Booky.DataAccess.Repository
+namespace BookyBook.DataAccess.Repository
 {
 	public class Repository<T> : IRepository<T> where T : class
 	{
-		private readonly ApplicationDbContext _db;
+		protected readonly ApplicationDbContext _db;
 		internal DbSet<T> dbSet;
 		public Repository(ApplicationDbContext db)
 		{

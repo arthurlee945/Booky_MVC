@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookyApp", "BookyApp\BookyApp.csproj", "{DEF07A21-FA04-47A2-AAF2-8F8ACFC27979}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookyBookWeb", "BookyApp\BookyBookWeb.csproj", "{DEF07A21-FA04-47A2-AAF2-8F8ACFC27979}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booky.DataAccess", "Booky.DataAccess\Booky.DataAccess.csproj", "{44E4ADCC-FFB1-4784-91FA-78CE91169B33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookyBook.DataAccess", "Booky.DataAccess\BookyBook.DataAccess.csproj", "{44E4ADCC-FFB1-4784-91FA-78CE91169B33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booky.Models", "Booky.Models\Booky.Models.csproj", "{FA2C48BE-00F5-4860-A064-494B25E69881}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookyBook.Models", "Booky.Models\BookyBook.Models.csproj", "{FA2C48BE-00F5-4860-A064-494B25E69881}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booky.Utility", "Booky.Utility\Booky.Utility.csproj", "{EB82A79C-1BEE-44E7-B31F-4E187B5B0B6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookyBook.Utility", "Booky.Utility\BookyBook.Utility.csproj", "{EB82A79C-1BEE-44E7-B31F-4E187B5B0B6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

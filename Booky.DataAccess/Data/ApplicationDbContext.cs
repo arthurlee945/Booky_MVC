@@ -1,8 +1,8 @@
-﻿using Booky.Models;
+﻿using BookyBook.Models;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Booky.DataAccess.Data
+namespace BookyBook.DataAccess.Data
 {
     public class ApplicationDbContext: DbContext
     {

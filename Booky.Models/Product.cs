@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookyBook.Utility
+namespace BookyBook.Models
 {
-	public static class SD
+	public class Product
 	{
 	}
 }
