@@ -1,11 +1,12 @@
 ﻿using Booky.DataAccess.Data;
+using Booky.DataAccess.Repository.IRepository;
 using Booky.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookyApp.Controllers
 {
-    public class CategoryController : Controller
+    public class CategoryController : Controller,
     {
         private readonly ApplicationDbContext _db;
         public CategoryController(ApplicationDbContext db)
