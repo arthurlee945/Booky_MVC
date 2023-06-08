@@ -1,6 +1,9 @@
 ﻿using BookyBook.DataAccess.Repository.IRepository;
 using BookyBook.Models;
+using BookyBook.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace BookyBookWeb.Areas.Admin.Controllers
 {
@@ -9,87 +12,151 @@ namespace BookyBookWeb.Areas.Admin.Controllers
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IProductRepository productRepo;
-		public ProductController(IUnitOfWork db)
+		private readonly IWebHostEnvironment _webHostEnvironment;
+		public ProductController(IUnitOfWork db, IWebHostEnvironment webHostEnvironment)
 		{
 			_unitOfWork = db;
+			_webHostEnvironment = webHostEnvironment;
 			productRepo = _unitOfWork.Product;
 		}
 		public IActionResult Index()
 		{
-			List<Product> objCatList = productRepo.GetAll().ToList();
-			return View(objCatList);
+			List<Product> objProdList = productRepo.GetAll(includeProperties: "Category").ToList();
+
+			
+			return View(objProdList);
 		}
 
-		public IActionResult Create()
+		public IActionResult Upsert(int? id)
 		{
-			return View();
+
+			ProductVM ProductVM = new ProductVM() {
+				CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem()
+				{
+					Text = u.Name,
+					Value = u.Id.ToString()
+				}),
+				Product = new Product()
+			};
+			if(id== null || id == 0)
+			{
+				return View(ProductVM);
+			}
+			else
+			{
+				ProductVM.Product = _unitOfWork.Product.Get(u => u.Id == id);
+				return View(ProductVM);
+			}
 		}
 		[HttpPost]
-		public IActionResult Create(Product obj)
+		public IActionResult Upsert(ProductVM productVM, IFormFile? file)
 		{
 			if (ModelState.IsValid)
 			{
-				productRepo.Add(obj);
+				string wwwRootPath = _webHostEnvironment.WebRootPath;
+				if(file != null)
+				{
+					string fileName = Guid.NewGuid().ToString()+Path.GetExtension(file.FileName);
+					string productPath = Path.Combine(wwwRootPath, @"images\products");
+					if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
+					{
+						//delete
+						string oldPath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.TrimStart('\\'));
+						if (System.IO.File.Exists(oldPath))
+						{
+							System.IO.File.Delete(oldPath);
+						}
+					}
+					using(var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+					{
+						file.CopyTo(fileStream);
+					}
+					productVM.Product.ImageUrl = @"\images\products\" + fileName;
+				}
+				if(productVM.Product.Id == 0)
+				{
+					productRepo.Add(productVM.Product);
+				}
+				else
+				{
+					productRepo.Update(productVM.Product);
+				}
 				_unitOfWork.Save();
 				TempData["success"] = "Product Created Successfully";
 				return RedirectToAction("Index");
 			}
-			return View();
-		}
-		public IActionResult Edit(int? id)
-		{
-			if (id == null || id == 0)
+			else
 			{
-				return NotFound();
+				productVM.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem()
+				{
+					Text = u.Name,
+					Value = u.Id.ToString()
+				});
+				return View(productVM);
 			}
-			Product? productFromDb = productRepo.Get(u => u.Id == id);
-			if (productFromDb == null)
-			{
-				return NotFound();
-			}
-			return View(productFromDb);
-		}
-		[HttpPost]
-		public IActionResult Edit(Product obj)
-		{
-			if (ModelState.IsValid)
-			{
-				productRepo.Update(obj);
-				_unitOfWork.Save();
-				TempData["success"] = "Product Updated Successfully";
 
-				return RedirectToAction("Index");
-			}
-			return View();
 		}
+		
+		//public IActionResult Delete(int? id)
+		//{
+		//	if (id == null || id == 0)
+		//	{
+		//		return NotFound();
+		//	}
+		//	Product? productFromDb = productRepo.Get(u => u.Id == id);
+		//	if (productFromDb == null)
+		//	{
+		//		return NotFound();
+		//	}
+		//	return View(productFromDb);
+		//}
+		//[HttpPost, ActionName("Delete")]
 
+		//public IActionResult DeletePost(int? id)
+		//{
+		//	Product? deletingPost = productRepo.Get(u => u.Id == id);
+		//	if (deletingPost == null)
+		//	{
+		//		return NotFound();
+		//	}
+		//	productRepo.Remove(deletingPost);
+		//	_unitOfWork.Save();
+		//	TempData["success"] = "Product Deleted Successfully";
+
+		//	return RedirectToAction("Index");
+		//}
+
+		#region apiCalls
+		[HttpGet]
+		public IActionResult GetAll()
+		{
+			List<Product> objProdList = productRepo.GetAll(includeProperties: "Category").ToList();
+			return Json(new { data = objProdList });
+		}
+		[HttpDelete]
 		public IActionResult Delete(int? id)
 		{
-			if (id == null || id == 0)
+			var productToBeDeleted = _unitOfWork.Product.Get(u => u.Id == id);
+			if(productToBeDeleted == null)
 			{
-				return NotFound();
+				return Json(new { success = false, message = "Error while deleting" });
 			}
-			Product? productFromDb = productRepo.Get(u => u.Id == id);
-			if (productFromDb == null)
+			string webRootPath = _webHostEnvironment.WebRootPath;
+	
+			if (!string.IsNullOrEmpty(productToBeDeleted.ImageUrl))
 			{
-				return NotFound();
+				//delete
+				var oldImagePath = Path.Combine(webRootPath, productToBeDeleted.ImageUrl.TrimStart('\\'));
+				if (System.IO.File.Exists(oldImagePath))
+				{
+					System.IO.File.Delete(oldImagePath);
+				}
 			}
-			return View(productFromDb);
-		}
-		[HttpPost, ActionName("Delete")]
 
-		public IActionResult DeletePost(int? id)
-		{
-			Product? deletingPost = productRepo.Get(u => u.Id == id);
-			if (deletingPost == null)
-			{
-				return NotFound();
-			}
-			productRepo.Remove(deletingPost);
+			_unitOfWork.Product.Remove(productToBeDeleted);
 			_unitOfWork.Save();
-			TempData["success"] = "Product Deleted Successfully";
-
-			return RedirectToAction("Index");
+			return Json(new { success=true, message="Delete Successful" });
 		}
+		#endregion
 	}
 }
