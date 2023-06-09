@@ -12,7 +12,9 @@ namespace BookyBook.DataAccess.Data
 
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
-		public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<Company> Companies { get; set; }
+
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +25,11 @@ namespace BookyBook.DataAccess.Data
                 new Category() { Id = 2, Name = "SciFi", DisplayOrder = 2 },
                 new Category() { Id = 3, Name = "History", DisplayOrder = 3 }
                 );
+            modelBuilder.Entity<Company>().HasData(
+				new Company() { Id = 1, Name = "Impact Networking", StreetAddress = "151 N Michigan", City="Chicago", PostalCode="60601", State="IL", PhoneNumber="0000000000" },
+				new Company() { Id =2, Name = "Something", StreetAddress = "112412451 N Michigan", City = "Chicago", PostalCode = "60605", State = "IL", PhoneNumber = "0000000000" },
+				new Company() { Id = 3, Name = "Narnia", StreetAddress = "151 an", City = "Chicago", PostalCode = "60011", State = "IL", PhoneNumber = "0000000000" }
+				);
             modelBuilder.Entity<Product>().HasData(
 					new Product
 					{

@@ -4,6 +4,7 @@ using BookyBook.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookyBook.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230609175609_AddCompanyTable")]
+    partial class AddCompanyTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,38 +96,6 @@ namespace BookyBook.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            City = "Chicago",
-                            Name = "Impact Networking",
-                            PhoneNumber = "0000000000",
-                            PostalCode = "60601",
-                            State = "IL",
-                            StreetAddress = "151 N Michigan"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            City = "Chicago",
-                            Name = "Something",
-                            PhoneNumber = "0000000000",
-                            PostalCode = "60605",
-                            State = "IL",
-                            StreetAddress = "112412451 N Michigan"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            City = "Chicago",
-                            Name = "Narnia",
-                            PhoneNumber = "0000000000",
-                            PostalCode = "60011",
-                            State = "IL",
-                            StreetAddress = "151 an"
-                        });
                 });
 
             modelBuilder.Entity("BookyBook.Models.Product", b =>
@@ -476,10 +447,6 @@ namespace BookyBook.DataAccess.Migrations
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -492,8 +459,6 @@ namespace BookyBook.DataAccess.Migrations
 
                     b.Property<string>("StreetAddress")
                         .HasColumnType("nvarchar(max)");
-
-                    b.HasIndex("CompanyId");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
@@ -558,17 +523,6 @@ namespace BookyBook.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("BookyBook.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("BookyBook.Models.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Company");
                 });
 #pragma warning restore 612, 618
         }
