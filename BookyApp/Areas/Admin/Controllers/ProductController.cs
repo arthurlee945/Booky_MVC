@@ -1,14 +1,19 @@
 ﻿using BookyBook.DataAccess.Repository.IRepository;
 using BookyBook.Models;
 using BookyBook.Models.ViewModels;
+using BookyBook.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using System.Data;
 
 namespace BookyBookWeb.Areas.Admin.Controllers
 {
 	[Area("Admin")]
-	public class ProductController : Controller
+    [Authorize(Roles = SD.Role_Admin)]
+
+    public class ProductController : Controller
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IProductRepository productRepo;
