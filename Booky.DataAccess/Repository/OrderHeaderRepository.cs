@@ -16,7 +16,34 @@ namespace BookyBook.DataAccess.Repository
 
 		public void Update(OrderHeader obj)
 		{
-			_db.Update(obj);
+			_db.OrderHeaders.Update(obj);
 		}
+		public void UpdateStatus(int id, string orderStatus, string? paymentStatus = null)
+		{
+			OrderHeader oh = _db.OrderHeaders.FirstOrDefault(u => u.Id == id);
+			if(oh != null)
+			{
+				oh.OrderStatus = orderStatus;
+				if(!string.IsNullOrEmpty(paymentStatus))
+				{
+					oh.PaymentStatus = paymentStatus;
+				}
+			}
+		}
+
+		public void UpdateStripePaymentID(int id, string sessionId, string paymentIntentId)
+		{
+			OrderHeader oh = _db.OrderHeaders.FirstOrDefault(u => u.Id == id);
+			if(!string.IsNullOrEmpty(sessionId))
+			{
+				oh.SessionId = sessionId;
+			}
+			if (!string.IsNullOrEmpty(paymentIntentId))
+			{
+				oh.PaymentIntentId = paymentIntentId;
+				oh.PaymentDate = DateTime.Now;
+			}
+		}
+
 	}
 }
