@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace BookyBook.DataAccess.Repository.IRepository
 {
-	public interface IOrderHeaderRepository : IRepository<OrderHeader>
+	public interface IShoppingCartRepository : IRepository<ShoppingCart>
 	{
-		public void Update(OrderHeader obj);
+		public void Update(ShoppingCart obj);
 	}
 }

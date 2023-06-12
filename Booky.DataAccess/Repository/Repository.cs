@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using BookyBook.DataAccess.Data;
@@ -24,9 +25,10 @@ namespace BookyBook.DataAccess.Repository
 			dbSet.Add(entity);
 		}
 
-		public T Get(System.Linq.Expressions.Expression<Func<T, bool>> filter, string? includeProperties = null)
+		public T Get(System.Linq.Expressions.Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
 		{
-			IQueryable<T> query = dbSet;
+
+			IQueryable<T> query = tracked? dbSet : dbSet.AsNoTracking();
 			if (!string.IsNullOrEmpty(includeProperties))
 			{
 				foreach (string includeProp in includeProperties
@@ -38,10 +40,11 @@ namespace BookyBook.DataAccess.Repository
 			return query.Where(filter).FirstOrDefault();
 		}
 
-		public IEnumerable<T> GetAll(string? includeProperties = null)
+		public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
 		{
 
 			IQueryable<T> query = dbSet;
+			query = filter == null ? query : query.Where(filter);
 			if(!string.IsNullOrEmpty(includeProperties))
 			{
 				foreach(string includeProp in includeProperties
