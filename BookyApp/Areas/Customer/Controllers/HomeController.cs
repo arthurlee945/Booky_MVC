@@ -1,6 +1,8 @@
 ﻿using BookyBook.DataAccess.Repository.IRepository;
 using BookyBook.Models;
+using BookyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Security.Claims;
@@ -20,6 +22,7 @@ namespace BookyBookWeb.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
+
             IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category"); 
             return View(productList);
         }
@@ -44,13 +47,16 @@ namespace BookyBookWeb.Areas.Customer.Controllers
 
                 cartFromDB.Count += shoppingCart.Count;
                 _unitOfWork.ShoppingCart.Update(cartFromDB);
+                _unitOfWork.Save();
             }
             else
             {
                 _unitOfWork.ShoppingCart.Add(shoppingCart);
+                _unitOfWork.Save();
+                HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId).Count());
             }
 
-            _unitOfWork.Save();
+
             TempData["success"] = "Cart Updated Successfully";
             return RedirectToAction(nameof(Index));
         }

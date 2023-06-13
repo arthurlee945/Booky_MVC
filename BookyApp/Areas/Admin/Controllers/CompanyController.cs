@@ -11,9 +11,9 @@ using System.Data;
 namespace BookyBookWeb.Areas.Admin.Controllers
 {
 	[Area("Admin")]
-    //[Authorize(Roles = SD.Role_Admin)]
+    [Authorize(Roles = SD.Role_Admin)]
 
-    public class CompanyController : Controller
+	public class CompanyController : Controller
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ICompanyRepository companyRepo;

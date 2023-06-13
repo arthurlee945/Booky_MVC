@@ -44,7 +44,7 @@ namespace BookyBook.DataAccess.Repository
 		{
 
 			IQueryable<T> query = dbSet;
-			query = filter == null ? query : query.Where(filter);
+            query = filter == null ? query : query.Where(filter);
 			if(!string.IsNullOrEmpty(includeProperties))
 			{
 				foreach(string includeProp in includeProperties
