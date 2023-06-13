@@ -9,6 +9,7 @@ using Stripe.Checkout;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace BookyBookWeb.Areas.Customer.Controllers
 {
@@ -161,7 +162,7 @@ namespace BookyBookWeb.Areas.Customer.Controllers
             if (applicationUser.CompanyId.GetValueOrDefault() == 0)
             {
                 //it is regular Stripe logic
-                string domain = @"http://localhost:5243/";
+                string domain = Request.Scheme + "://" + Request.Host.Value + "/";
 				var options = new SessionCreateOptions
 				{
 					SuccessUrl = domain+$"customer/cart/OrderConfirmation?id={shoppingCartVM.OrderHeader.Id}",
