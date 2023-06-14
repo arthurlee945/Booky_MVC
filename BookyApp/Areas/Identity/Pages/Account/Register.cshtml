@@ -128,10 +128,9 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-
         document.getElementById("Input_Role").onchange = (e) => {
             if (e.target.value === "Company") {
-                document.getElementById("Input_CompanyId").style = "display:unset;";
+                document.getElementById("Input_CompanyId").style = "display:block;";
             } else {
                 document.getElementById("Input_CompanyId").style = "display:none;";
 

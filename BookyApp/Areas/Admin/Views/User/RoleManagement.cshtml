@@ -1,0 +1,66 @@
+﻿@model ManageUserVM
+@{
+    ViewData["Title"] = "Manage User Role";
+}
+
+
+<div class="card shadow border-0 mt-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-4">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="py-2 text-white">@ViewData["Title"]</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div class="row pt-3">
+            <div class="col-md-12">
+                <form id="registerForm" class="row" method="post">
+                    <input asp-for="ApplicationUser.Id" hidden />
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                    <div class="form-floating mb-3 col-12">
+                        <input asp-for="ApplicationUser.Name" class="form-control" autocomplete="username" readonly aria-required="true" placeholder="name@example.com" />
+                        <label asp-for = "ApplicationUser.Name" class="ms-2"></label>
+                    </div>
+                    <div class="form-floating py-2  col-12">
+                        <select asp-for="ApplicationUser.Role" asp-items="@Model.RoleList" class="form-select">
+       
+                        </select>
+                    </div>
+                    @{
+                        var companyVisible = "display:none;";
+                    }
+                    @if(Model.ApplicationUser.Role == SD.Role_Company)
+                    {
+                        companyVisible = "display:block;";
+                    }
+                    <div class="form-floating py-2 col-12">
+                        <select  asp-for="ApplicationUser.CompanyId" style="@companyVisible" asp-items="@Model.CompanyList" class="form-select">
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <button type="submit" class="btn btn-primary form-control">UPDATE ROLE</button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a asp-are = "Admin" asp-controller="User" asp-action="Index" class="btn btn-outline-primary form-control">BACK TO LIST</a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById("ApplicationUser_Role").onchange = (e) => {
+            if (e.target.value === "Company") {
+                document.getElementById("ApplicationUser_CompanyId").style = "display:block;";
+            } else {
+                document.getElementById("ApplicationUser_CompanyId").style = "display:none;";
+
+            }
+        }
+    </script>
+}

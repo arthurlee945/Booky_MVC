@@ -37,9 +37,13 @@ namespace BookyBookWeb.Areas.Customer.Controllers
                 ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(c => c.ApplicationUserId == userId, includeProperties: "Product"),
                 OrderHeader = new()
             };
+
+            IEnumerable<ProductImage> productImages = _unitOfWork.ProductImage.GetAll();
+
             foreach (ShoppingCart c in shoppingCartVM.ShoppingCartList)
             {
-                c.Price = GetPriceBasedOnQuantity(c);
+                c.Product.ProductImages = productImages.Where(u => u.ProductId == c.Product.Id).ToList();
+				c.Price = GetPriceBasedOnQuantity(c);
 				shoppingCartVM.OrderHeader.OrderTotal += c.Price * c.Count;
             }
             return View(shoppingCartVM);

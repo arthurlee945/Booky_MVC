@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace BookyBook.DataAccess.Repository
 {
-	public class ApplicationUserRepository : Repository<ApplicationUser>, IApplicationUserRepository
-    {
-		public ApplicationUserRepository(ApplicationDbContext ctx) : base(ctx) {}
+	public class ProductImageRepository : Repository<ProductImage>, IProductImageRepository
+	{
+		public ProductImageRepository(ApplicationDbContext ctx) : base(ctx) {}
 
-        public void Update(ApplicationUser user)
-        {
-            _db.Update(user);
-        }
-    }
+		public void Update(ProductImage obj)
+		{
+			_db.Update(obj);
+		}
+	}
 }

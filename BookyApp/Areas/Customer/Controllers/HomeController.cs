@@ -23,12 +23,12 @@ namespace BookyBookWeb.Areas.Customer.Controllers
         public IActionResult Index()
         {
 
-            IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category"); 
+            IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category,ProductImages"); 
             return View(productList);
         }
 		public IActionResult Details(int productId)
 		{
-			Product product = _unitOfWork.Product.Get(expression : u => u.Id== productId, includeProperties: "Category");
+			Product product = _unitOfWork.Product.Get(expression : u => u.Id== productId, includeProperties: "Category,ProductImages");
             ShoppingCart shoppingCart = new ShoppingCart() { Product = product, Count = 1, ProductId = productId };
 			return View(shoppingCart);
 		}

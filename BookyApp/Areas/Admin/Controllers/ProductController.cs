@@ -26,7 +26,7 @@ namespace BookyBookWeb.Areas.Admin.Controllers
 		}
 		public IActionResult Index()
 		{
-			List<Product> objProdList = productRepo.GetAll(includeProperties: "Category").ToList();
+			List<BookyBook.Models.Product> objProdList = productRepo.GetAll(includeProperties: "Category").ToList();
 
 			
 			return View(objProdList);
@@ -41,7 +41,7 @@ namespace BookyBookWeb.Areas.Admin.Controllers
 					Text = u.Name,
 					Value = u.Id.ToString()
 				}),
-				Product = new Product()
+				Product = new BookyBook.Models.Product()
 			};
 			if(id== null || id == 0)
 			{
@@ -49,36 +49,16 @@ namespace BookyBookWeb.Areas.Admin.Controllers
 			}
 			else
 			{
-				ProductVM.Product = _unitOfWork.Product.Get(u => u.Id == id);
+				ProductVM.Product = _unitOfWork.Product.Get(u => u.Id == id, includeProperties: "ProductImages");
 				return View(ProductVM);
 			}
 		}
 		[HttpPost]
-		public IActionResult Upsert(ProductVM productVM, IFormFile? file)
+		public IActionResult Upsert(ProductVM productVM, List<IFormFile> files)
 		{
 			if (ModelState.IsValid)
 			{
-				string wwwRootPath = _webHostEnvironment.WebRootPath;
-				if(file != null)
-				{
-					string fileName = Guid.NewGuid().ToString()+Path.GetExtension(file.FileName);
-					string productPath = Path.Combine(wwwRootPath, @"images\products");
-					if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
-					{
-						//delete
-						string oldPath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.TrimStart('\\'));
-						if (System.IO.File.Exists(oldPath))
-						{
-							System.IO.File.Delete(oldPath);
-						}
-					}
-					using(var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
-					{
-						file.CopyTo(fileStream);
-					}
-					productVM.Product.ImageUrl = @"\images\products\" + fileName;
-				}
-				if(productVM.Product.Id == 0)
+				if (productVM.Product.Id == 0)
 				{
 					productRepo.Add(productVM.Product);
 				}
@@ -87,7 +67,37 @@ namespace BookyBookWeb.Areas.Admin.Controllers
 					productRepo.Update(productVM.Product);
 				}
 				_unitOfWork.Save();
-				TempData["success"] = "Product Created Successfully";
+				string wwwRootPath = _webHostEnvironment.WebRootPath;
+				if(files != null)
+				{
+
+					foreach(IFormFile file in files)
+					{
+						string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+						string productPath = @"images\products\product-" + productVM.Product.Id;
+						string finalPath = Path.Combine(wwwRootPath, productPath);
+						if (!Directory.Exists(finalPath)) 
+							Directory.CreateDirectory(finalPath);
+						using (var fileStream = new FileStream(Path.Combine(finalPath, fileName), FileMode.Create))
+						{
+							file.CopyTo(fileStream);
+						}
+						ProductImage productImage = new()
+						{
+							ImageUrl = @"\" + productPath + @"\" + fileName,
+							ProductId = productVM.Product.Id,
+						};
+						if(productVM.Product.ProductImages == null)
+						{
+							productVM.Product.ProductImages = new List<ProductImage>();
+						}
+						productVM.Product.ProductImages.Add(productImage);
+					}
+					_unitOfWork.Product.Update(productVM.Product);
+					_unitOfWork.Save();
+				}
+
+				TempData["success"] = "Product Created/Updated Successfully";
 				return RedirectToAction("Index");
 			}
 			else
@@ -102,6 +112,27 @@ namespace BookyBookWeb.Areas.Admin.Controllers
 
 		}
 		
+		public IActionResult DeleteImage(int imageId)
+		{
+			var imageToBeDeleted = _unitOfWork.ProductImage.Get(u => u.Id == imageId);
+			int productId = imageToBeDeleted.ProductId;
+			if(imageToBeDeleted != null)
+			{
+				if(!string.IsNullOrEmpty(imageToBeDeleted.ImageUrl))
+				{
+					var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, imageToBeDeleted.ImageUrl.TrimStart('\\'));
+					if (System.IO.File.Exists(oldImagePath))
+					{
+						System.IO.File.Delete(oldImagePath);
+					}
+				}
+				_unitOfWork.ProductImage.Remove(imageToBeDeleted);
+				_unitOfWork.Save();
+				TempData["success"] = "Deleted successfully";
+			}
+
+			return RedirectToAction(nameof(Upsert), new { id = productId });
+		}
 		//public IActionResult Delete(int? id)
 		//{
 		//	if (id == null || id == 0)
@@ -135,7 +166,7 @@ namespace BookyBookWeb.Areas.Admin.Controllers
 		[HttpGet]
 		public IActionResult GetAll()
 		{
-			List<Product> objProdList = productRepo.GetAll(includeProperties: "Category").ToList();
+			List<BookyBook.Models.Product> objProdList = productRepo.GetAll(includeProperties: "Category").ToList();
 			return Json(new { data = objProdList });
 		}
 		[HttpDelete]
@@ -147,16 +178,30 @@ namespace BookyBookWeb.Areas.Admin.Controllers
 				return Json(new { success = false, message = "Error while deleting" });
 			}
 			string webRootPath = _webHostEnvironment.WebRootPath;
-	
-			if (!string.IsNullOrEmpty(productToBeDeleted.ImageUrl))
+			//foreach(ProductImage img in productToBeDeleted.ProductImages)
+			//{
+			//	if (!string.IsNullOrEmpty(img.ImageUrl))
+			//	{
+			//		//delete
+			//		var oldImagePath = Path.Combine(webRootPath, img.ImageUrl.TrimStart('\\'));
+			//		if (System.IO.File.Exists(oldImagePath))
+			//		{
+			//			System.IO.File.Delete(oldImagePath);
+			//		}
+			//	}
+			//}
+			string productPath = @"images\products\product-" + id;
+			string finalPath = Path.Combine(webRootPath, productPath);
+			if (!Directory.Exists(finalPath))
 			{
-				//delete
-				var oldImagePath = Path.Combine(webRootPath, productToBeDeleted.ImageUrl.TrimStart('\\'));
-				if (System.IO.File.Exists(oldImagePath))
+				string[] filePaths = Directory.GetFiles(finalPath);
+				foreach (string filePath in filePaths)
 				{
-					System.IO.File.Delete(oldImagePath);
+					System.IO.File.Delete(filePath);
 				}
+				Directory.Delete(finalPath);
 			}
+
 
 			_unitOfWork.Product.Remove(productToBeDeleted);
 			_unitOfWork.Save();

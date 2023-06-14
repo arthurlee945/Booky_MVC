@@ -18,6 +18,7 @@ namespace BookyBook.DataAccess.Repository
 		public IApplicationUserRepository ApplicationUser { get; private set; }
 		public IOrderHeaderRepository OrderHeader { get; private set; }
 		public IOrderDetailRepository OrderDetail { get; private set; }
+		public IProductImageRepository ProductImage { get; private set; }
 
 		protected readonly ApplicationDbContext _db;
 		public UnitOfWork(ApplicationDbContext db)
@@ -26,10 +27,11 @@ namespace BookyBook.DataAccess.Repository
 			Category = new CategoryRepository(db);
 			Product = new ProductRepository(db);
 			Company = new CompanyRepository(db);
-			ShoppingCart = new ShoppingCartRepository(db);
+			ShoppingCart = new ShoppingCartRepository(db);	
 			ApplicationUser = new ApplicationUserRepository(db);
 			OrderHeader = new OrderHeaderRepository(db);
 			OrderDetail = new OrderDetailRepository(db);
+			ProductImage = new ProductImageRepository(db);
 		}
 		public void Save()
 		{
